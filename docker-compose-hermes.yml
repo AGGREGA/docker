@@ -1,0 +1,99 @@
+version: '3.7'
+services:
+    frontend:
+        build:
+            context: ./
+            dockerfile: DockerfileUbuntu
+        image: hermes-frontend
+        ports:
+            - 8081:80
+        container_name: hermes-frontend
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - ./projects/Hermes-front:/var/www/project/current
+            - ./packages/aggrega/ironforge:/var/www/packages/aggrega/ironforge
+            - ./packages/aggrega/hermes:/var/www/packages/aggrega/hermes
+        networks:
+            - hermes
+    backend:
+        build:
+            context: ./
+            dockerfile: DockerfileUbuntu
+        image: hermes-backend
+        ports:
+            - 8082:80
+        container_name: hermes-backend
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - ./projects/Hermes-backend:/var/www/project/current
+            - ./packages/aggrega/ironforge:/var/www/packages/aggrega/ironforge
+            - ./packages/aggrega/hermes:/var/www/packages/aggrega/hermes
+            - ./projects/Hermes-backend/supervisor-hermes.conf:/etc/supervisor/conf.d/supervisor-hermes.conf
+        networks:
+            - hermes
+
+    db:
+        image: mysql:5.7
+        container_name: hermes-db
+        restart: unless-stopped
+        ports:
+            - 33060:3306
+        environment:
+            MYSQL_DATABASE: hermes
+            MYSQL_ROOT_PASSWORD: hermes
+            MYSQL_PASSWORD: secret
+            MYSQL_USER: hermes
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        volumes:
+            - ./mysql/hermes:/var/lib/mysql
+        networks:
+            - hermes
+
+    redis:
+        image: redis:alpine
+        container_name: hermes-redis
+        restart: unless-stopped
+        ports:
+            - 63079:6379
+        networks:
+            - hermes
+    print:
+        build:
+            context: ./
+            dockerfile: DockerfileNode
+        image: hermes-print
+        ports:
+            - 8083:80
+            - 4446:443
+        container_name: hermes-print
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - ./projects/Hermes-print:/var/www/project/current
+            - ./nginx-print.conf:/etc/nginx/sites-enabled/nginx-print.conf
+        networks:
+            - hermes
+
+    heatmap:
+        build:
+            context: ./
+            dockerfile: DockerfileNode
+        image: hermes-heatmap
+        ports:
+            - 8084:80
+            - 4447:443
+        container_name: hermes-heatmap
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - ./projects/Hermes-heatmap:/var/www/project/current
+            - ./projects/Hermes-front:/var/www/Hermes-front
+            - ./nginx-heatmap.conf:/etc/nginx/sites-enabled/nginx-heatmap.conf
+        networks:
+            - hermes
+networks:
+    hermes:
+        driver: bridge
