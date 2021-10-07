@@ -1,14 +1,23 @@
 FROM ubuntu:latest
 WORKDIR /var/www/
-LABEL maintainer="Node"
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
-RUN apt-get update && apt-get upgrade -y
-# Instala o NGINX para testar
-RUN apt-get install -y nodejs nginx xvfb x11-xkb-utils xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic x11-apps clang libdbus-1-dev libgtk2.0-dev libnotify-dev libgconf2-dev libasound2-dev libcap-dev libcups2-dev libxtst-dev libxss1 libnss3-dev gcc-multilib g++-multilib
+LABEL maintainer="Aggrega NODE"
+ENV DEBIAN_FRONTEND noninteractive
+ENV TZ=UTC
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+# Install NGINX , Node and dependencies to Nightmare
+RUN apt-get update \
+    && apt-get install -y nodejs nginx xvfb npm \
+    libxss1 x11-xkb-utils xfonts-100dpi \
+    xfonts-cyrillic xfonts-75dpi xfonts-scalable \
+    x11-apps clang libdbus-1-dev \
+    libgtk2.0-dev libnotify-dev libgconf2-dev \
+    libasound2-dev libcap-dev libcups2-dev  \
+    libxtst-dev  libnss3-dev gcc-multilib g++-multilib \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 # Expoe a porta 80
 EXPOSE 80
 
-RUN apt-get install -y npm
 RUN npm install pm2 -g
 
 COPY docker_process.sh docker_process.sh
