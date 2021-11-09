@@ -33,9 +33,9 @@ COPY php-fpm.conf /etc/php/8.0/fpm/php-fpm.conf
 COPY nginx-laravel.conf /etc/nginx/sites-enabled/
 
 # Configure ssh keys
-COPY .ssh/id_rsa /root/.ssh/id_rsa
-COPY .ssh/id_rsa.pub /root/.ssh/id_rsa.pub
-COPY .ssh/known_hosts /root/.ssh/known_hosts
+#COPY .ssh/id_rsa /root/.ssh/id_rsa
+#COPY .ssh/id_rsa.pub /root/.ssh/id_rsa.pub
+#COPY .ssh/known_hosts /root/.ssh/known_hosts
 
 RUN mkdir -p /var/www/.ssh/ && \
     cp /root/.ssh/* /var/www/.ssh/ && \
