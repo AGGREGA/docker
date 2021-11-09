@@ -37,8 +37,8 @@ COPY nginx-laravel.conf /etc/nginx/sites-enabled/
 #COPY .ssh/id_rsa.pub /root/.ssh/id_rsa.pub
 #COPY .ssh/known_hosts /root/.ssh/known_hosts
 
-RUN mkdir -p /var/www/.ssh/ && \
-    cp /root/.ssh/* /var/www/.ssh/ && \
+#RUN mkdir -p /var/www/.ssh/ && \
+#    cp /root/.ssh/* /var/www/.ssh/ && \
     chmod -R 0700 /var/www/.ssh && \
     chmod -R 0600 /var/www/.ssh/id_rsa && \
     chown -R www-data:www-data /var/www/.ssh
