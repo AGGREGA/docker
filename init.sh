@@ -122,7 +122,7 @@ if [ "$PROJECT" == "hermes" ] ||  [ "$INSTALL_ALL" == "true" ]; then
       if [ ! -d "$BISC8" ]; then
         git clone git@github.com:AGGREGA/bisc8-front.git ./projects/Bisc8
         mkdir -p projects/Bisc8/packages
-        ln -s ../../../packages/aggrega projects/Hermes-front/packages/aggrega
+        ln -s ../../../packages/aggrega projects/Bisc8/packages/aggrega
       fi
 fi
 
