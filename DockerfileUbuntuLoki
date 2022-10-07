@@ -1,0 +1,54 @@
+FROM ubuntu:20.04
+
+WORKDIR /var/www/
+LABEL maintainer="Aggrega"
+ENV DEBIAN_FRONTEND noninteractive
+ENV TZ=UTC
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt-get update \
+    && apt-get install -y software-properties-common zip unzip curl nginx supervisor git ssh tzdata unoconv \
+    && add-apt-repository ppa:ondrej/php \
+    && apt-get update \
+    && apt-get install -y php7.4-cli php7.4-dev \
+       php7.4-pgsql php7.4-tokenizer php7.4-gd \
+       php7.4-zip php7.4-curl php7.4-xdebug \
+       php7.4-imap php7.4-mysql php7.4-mbstring \
+       php7.4-xml php7.4-xmlrpc php7.4-bcmath \
+       php7.4-intl php7.4-readline php7.4-pcov \
+       php7.4-msgpack php7.4-igbinary php7.4-ldap \
+       php7.4-redis php7.4-swoole php7.4-fpm \
+       php7.4-imagick php7.4-mongodb php7.4-ctype \
+       php7.4-soap php7.4-tidy vim \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Configure php
+COPY php.ini /etc/php/7.4/fpm/php.ini
+COPY php-fpm-loki.conf /etc/php/7.4/fpm/php-fpm.conf
+
+# Configure nginx
+COPY nginx-laravel-loki.conf /etc/nginx/sites-enabled/
+
+# Configure ssh keys
+COPY .ssh/id_rsa /root/.ssh/id_rsa
+COPY .ssh/id_rsa.pub /root/.ssh/id_rsa.pub
+COPY .ssh/known_hosts /root/.ssh/known_hosts
+
+RUN mkdir -p /var/www/.ssh/ && \
+    cp /root/.ssh/* /var/www/.ssh/ && \
+    chmod -R 0700 /var/www/.ssh && \
+    chmod -R 0600 /var/www/.ssh/id_rsa && \
+    chown -R www-data:www-data /var/www/.ssh
+
+RUN mkdir -p /run/php/ && \
+    mkdir -p /var/www/.cache/dconf/ && \
+    mkdir -p /var/www/.config && \
+    chown -R www-data:www-data /var/www/.cache && chmod 775 -R /var/www/.cache && \
+    chown -R www-data:www-data /var/www/.config && chmod 775 -R /var/www/.config
+
+EXPOSE 80
+COPY docker_process.sh docker_process.sh
+CMD ./docker_process.sh --project-php=loki

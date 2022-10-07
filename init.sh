@@ -9,8 +9,8 @@ function usage() {
     echo ""
     echo "--help"
     echo "--install-all=true "
-    echo "--project=hermes | bisc8 "
-    echo "--package=ironforge | hermes | bisc8 | belit | beli2  "
+    echo "--project=hermes | bisc8 | loki | octaflow"
+    echo "--package=ironforge | hermes | bisc8 | belit | beli2 | loki | core-octaflow | campaign-octaflow"
     echo ""
 }
 
@@ -89,6 +89,28 @@ if [ "$PACKAGE" == "bisc8" ] ||  [ "$INSTALL_ALL" == "true" ]; then
   fi
 fi
 
+if [ "$PACKAGE" == "loki" ] ||  [ "$INSTALL_ALL" == "true" ]; then
+  BISC8='packages/aggrega/loki-pkg'
+  if [ ! -d "$BISC8" ]; then
+    git clone git@github.com:AGGREGA/loki-pkg-pkg.git ./packages/aggrega/loki-pkg
+  fi
+fi
+
+if [ "$PACKAGE" == "core-octaflow" ] ||  [ "$INSTALL_ALL" == "true" ]; then
+  COF='packages/purebros/core-octaflow'
+  if [ ! -d "$COF" ]; then
+    git clone git@github.com:purebros/core-octaflow.git ./packages/purebros/core-octaflow
+  fi
+fi
+
+if [ "$PACKAGE" == "campaign-octaflow" ] ||  [ "$INSTALL_ALL" == "true" ]; then
+  CaOF='packages/purebros/campaign-octaflow'
+  if [ ! -d "$CaOF" ]; then
+    git clone git@github.com:purebros/campaign-octaflow.git ./packages/purebros/campaign-octaflow
+  fi
+fi
+
+
 ###PROJECTS
 if [ "$PROJECT" == "hermes" ] ||  [ "$INSTALL_ALL" == "true" ]; then
   HERMES_BACKEND='projects/Hermes-backend'
@@ -117,12 +139,30 @@ if [ "$PROJECT" == "hermes" ] ||  [ "$INSTALL_ALL" == "true" ]; then
       fi
 fi
 
-if [ "$PROJECT" == "hermes" ] ||  [ "$INSTALL_ALL" == "true" ]; then
+if [ "$PROJECT" == "bisc8" ] ||  [ "$INSTALL_ALL" == "true" ]; then
     BISC8='projects/Bisc8'
       if [ ! -d "$BISC8" ]; then
         git clone git@github.com:AGGREGA/bisc8-front.git ./projects/Bisc8
         mkdir -p projects/Bisc8/packages
         ln -s ../../../packages/aggrega projects/Bisc8/packages/aggrega
+      fi
+fi
+
+if [ "$PROJECT" == "loki" ] ||  [ "$INSTALL_ALL" == "true" ]; then
+    BISC8='projects/Loki'
+      if [ ! -d "$BISC8" ]; then
+        git clone git@github.com:AGGREGA/loki-pkg-main.git ./projects/Loki
+        mkdir -p projects/Loki/packages
+        ln -s ../../../packages/aggrega projects/Loki/packages/aggrega
+      fi
+fi
+
+if [ "$PROJECT" == "octaflow" ] ||  [ "$INSTALL_ALL" == "true" ]; then
+    BISC8='projects/octaflow'
+      if [ ! -d "$BISC8" ]; then
+        git clone git@github.com:purebros/api-octaflow.git ./projects/Octaflow
+        mkdir -p projects/Octaflow/packages
+        ln -s ../../../packages/purebros projects/Octaflow/packages/purebros
       fi
 fi
 

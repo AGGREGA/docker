@@ -1,0 +1,21 @@
+version: '3.7'
+services:
+    iliad:
+        build:
+            context: ./
+            dockerfile: DockerfileUbuntu
+        image: loki
+        ports:
+            - 9091:80
+        container_name: iliad
+        environment:
+            - VIRTUAL_HOST=iliad.localhost
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - ./projects/Iliad:/var/www/project/current
+        networks:
+            - local-network
+networks:
+    local-network:
+        driver: bridge

@@ -7,7 +7,7 @@ function usage() {
     echo "Allowed commands"
     echo ""
     echo "--help"
-    echo "--project-php=hermes | bisc8 "
+    echo "--project-php=hermes | bisc8 | loki"
     echo "--project-node=print | heatmap "
     echo ""
 }
@@ -53,11 +53,6 @@ fi
 if [ ! -z $PROJECT_PHP ]; then
   echo "PROJECT PHP is $PROJECT_PHP";
   service cron restart
-  service php8.0-fpm restart
-  status=$?
-  if [ $status -ne 0 ]; then
-      echo "Failed to start php fpm: $status"
-  fi
   service nginx restart;
   status=$?
   if [ $status -ne 0 ]; then
@@ -83,9 +78,26 @@ if [ ! -z $PROJECT_PHP ]; then
   php artisan config:cache;
   php artisan migrate;
   if [ "$PROJECT_PHP" == "hermes" ]; then
+     service php8.0-fpm restart
+     status=$?
+     if [ $status -ne 0 ]; then
+         echo "Failed to start php fpm to hermes: $status"
+     fi
      php artisan db:seed --class=Aggrega\\Hermes\\Database\\Seeds\\DataStartSeed;
   elif [ "$PROJECT_PHP" == "bisc8" ]; then
-     php artisan db:seed --class=Aggrega\\Hermes\\Database\\Seeds\\DataStartSeed;
+      service php8.0-fpm restart
+      status=$?
+      if [ $status -ne 0 ]; then
+         echo "Failed to start php fpm to bisc8: $status"
+      fi
+      php artisan db:seed --class=Aggrega\\Bisc8\\Database\\Seeds\\DataStartSeed;
+  elif [ "$PROJECT_PHP" == "loki" ]; then
+      service php8.0-fpm restart
+      status=$?
+      if [ $status -ne 0 ]; then
+         echo "Failed to start php fpm to hermes: $status"
+      fi
+      php artisan db:seed --class=Aggrega\\Loki\\Database\\Seeds\\DataStartSeed;
   else
      echo "Failed find project php: $PROJECT_NODE"
   fi

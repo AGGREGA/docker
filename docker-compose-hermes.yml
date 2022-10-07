@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-    frontend:
+    hermes-frontend:
         build:
             context: ./
             dockerfile: DockerfileUbuntu
@@ -8,6 +8,8 @@ services:
         ports:
             - 8081:80
         container_name: hermes-frontend
+        environment:
+            - VIRTUAL_HOST=hermes-front.localhost
         restart: unless-stopped
         working_dir: /var/www
         volumes:
@@ -15,8 +17,8 @@ services:
             - ./packages/aggrega/ironforge:/var/www/packages/aggrega/ironforge
             - ./packages/aggrega/hermes:/var/www/packages/aggrega/hermes
         networks:
-            - hermes
-    backend:
+            - local-network
+    hermes-backend:
         build:
             context: ./
             dockerfile: DockerfileUbuntu
@@ -24,6 +26,8 @@ services:
         ports:
             - 8082:80
         container_name: hermes-backend
+        environment:
+            - VIRTUAL_HOST=hermes-backend.localhost
         restart: unless-stopped
         working_dir: /var/www
         volumes:
@@ -32,35 +36,9 @@ services:
             - ./packages/aggrega/hermes:/var/www/packages/aggrega/hermes
             - ./projects/Hermes-backend/supervisor-hermes.conf:/etc/supervisor/conf.d/supervisor-hermes.conf
         networks:
-            - hermes
+            - local-network
 
-    db:
-        image: mysql:5.7
-        container_name: hermes-db
-        restart: unless-stopped
-        ports:
-            - 33060:3306
-        environment:
-            MYSQL_DATABASE: hermes
-            MYSQL_ROOT_PASSWORD: hermes
-            MYSQL_PASSWORD: secret
-            MYSQL_USER: hermes
-            SERVICE_TAGS: dev
-            SERVICE_NAME: mysql
-        volumes:
-            - ./mysql/hermes:/var/lib/mysql
-        networks:
-            - hermes
-
-    redis:
-        image: redis:alpine
-        container_name: hermes-redis
-        restart: unless-stopped
-        ports:
-            - 63079:6379
-        networks:
-            - hermes
-    print:
+    hermes-print:
         build:
             context: ./
             dockerfile: DockerfileNode
@@ -75,9 +53,9 @@ services:
             - ./projects/Hermes-print:/var/www/project/current
             - ./nginx-print.conf:/etc/nginx/sites-enabled/nginx-print.conf
         networks:
-            - hermes
+            - local-network
 
-    heatmap:
+    hermes-heatmap:
         build:
             context: ./
             dockerfile: DockerfileNode
@@ -93,7 +71,7 @@ services:
             - ./projects/Hermes-front:/var/www/Hermes-front
             - ./nginx-heatmap.conf:/etc/nginx/sites-enabled/nginx-heatmap.conf
         networks:
-            - hermes
+            - local-network
 networks:
-    hermes:
+    local-network:
         driver: bridge

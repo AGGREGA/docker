@@ -1,0 +1,47 @@
+version: '3.7'
+services:
+    mysql:
+        image: arm64v8/mysql:oracle
+        container_name: mysql
+        restart: unless-stopped
+        ports:
+            - 3306:3306
+        environment:
+            MYSQL_DATABASE: services
+            MYSQL_ROOT_PASSWORD: services
+            MYSQL_PASSWORD: services
+            MYSQL_USER: services
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        volumes:
+            - ./mysql/services:/var/lib/mysql
+        user: mysql
+        networks:
+            - local-network
+
+    redis:
+        image: redis:alpine
+        container_name: redis
+        restart: unless-stopped
+        ports:
+            - 6379:6379
+        networks:
+            - local-network
+
+    mongo:
+        image: mongo:6.0
+        container_name: mongo
+        restart: unless-stopped
+        ports:
+            - 27017:27017
+        volumes:
+            - ./mongo/services:/data/db
+        environment:
+           - MONGO_INITDB_ROOT_USERNAME=
+           - MONGO_INITDB_ROOT_PASSWORD=
+        networks:
+            - local-network
+
+networks:
+    local-network:
+        driver: bridge

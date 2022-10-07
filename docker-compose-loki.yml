@@ -1,0 +1,24 @@
+version: '3.7'
+services:
+    loki:
+        build:
+            context: ./
+            dockerfile: DockerfileUbuntuLoki
+        image: loki
+        ports:
+            - 80:80
+            - 27123:27123
+        container_name: loki-pkg
+        environment:
+            - VIRTUAL_HOST=loki-pkg.localhost
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - ./projects/Loki:/var/www/project/current
+            - ./packages/aggrega/ironforge:/var/www/packages/aggrega/ironforge
+            - ./packages/aggrega/loki-pkg:/var/www/packages/aggrega/loki-pkg-pkg
+        networks:
+            - local-network
+networks:
+    local-network:
+        driver: bridge
